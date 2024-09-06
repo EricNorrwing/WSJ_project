@@ -38,3 +38,5 @@ out/
 
 ### Security ###
 /src/main/resources/application.properties
+
+### Test ###
