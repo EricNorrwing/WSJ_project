@@ -37,6 +37,4 @@ out/
 .vscode/
 
 ### Security ###
-/src/main/resources/application.properties
-
-### Test ###
+.env
