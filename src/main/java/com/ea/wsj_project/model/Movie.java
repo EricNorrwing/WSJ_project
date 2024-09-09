@@ -11,5 +11,7 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String title;
+
     //Title, Description, Comments, Ratings, Genre
 }
