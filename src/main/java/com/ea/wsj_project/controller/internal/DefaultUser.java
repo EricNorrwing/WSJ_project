@@ -3,7 +3,6 @@ package com.ea.wsj_project.controller.internal;
 import com.ea.wsj_project.model.User;
 import com.ea.wsj_project.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
 @Controller
