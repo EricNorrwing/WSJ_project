@@ -1,4 +1,4 @@
-package com.ea.wsj_project.controller.internal;
+package com.ea.wsj_project.setup;
 
 import com.ea.wsj_project.model.User;
 import com.ea.wsj_project.repository.UserRepository;
