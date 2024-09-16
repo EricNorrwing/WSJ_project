@@ -3,9 +3,9 @@ package com.ea.wsj_project.controller.service;
 import com.ea.wsj_project.model.User;
 import com.ea.wsj_project.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 

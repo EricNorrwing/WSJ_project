@@ -20,10 +20,10 @@ public class UserController {
         this.userService = userService;
     }
 
-
+//TODO
     @GetMapping("/user/{id}")
     public ResponseEntity<Optional<User>> getUser(@PathVariable Integer id) {
-
+        return null;
     }
 
 
