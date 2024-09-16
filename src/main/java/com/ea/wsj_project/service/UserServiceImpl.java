@@ -1,4 +1,4 @@
-package com.ea.wsj_project.controller.service;
+package com.ea.wsj_project.service;
 
 import com.ea.wsj_project.model.User;
 import com.ea.wsj_project.repository.UserRepository;
@@ -22,7 +22,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getUser(Long id) {
-       return userRepository.findById(id);
+        try {
+            return userRepository.findById(id);
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
