@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Slf4j
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUser(Long id) {
+    public Optional<User> getUserById(Long id) {
         try {
             return userRepository.findById(id);
         } catch (IllegalArgumentException e) {
@@ -29,10 +30,24 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     @Override
+    public Optional<User> getUserByUsername(String username) {
+        try {
+            return userRepository.findByUsername(username);
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
+    }
+
     public Optional<User> createUser(User user) {
-        userRepository.save(user);
-        return userRepository.findByUsername(user.getUsername());
+        Optional<User> existingUser = userRepository.findByUsername(user.getUsername());
+
+        if (existingUser.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(userRepository.save(user));
     }
 
     @Override

@@ -4,10 +4,7 @@ import com.ea.wsj_project.service.UserServiceImpl;
 import com.ea.wsj_project.model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -24,7 +21,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
-        Optional<User> userOptional = userService.getUser(id);
+        Optional<User> userOptional = userService.getUserById(id);
 
         if (userOptional.isPresent()) {
             return ResponseEntity.ok(userOptional.get());
@@ -33,6 +30,19 @@ public class UserController {
                     .status(404)
                     .body("No user exists wih id: " + id);
         }
+    }
+
+    @PostMapping("/newUser")
+    public ResponseEntity<?> newUser(@RequestBody User user) {
+        Optional<User> createdUser = userService.createUser(user);
+
+        if(createdUser.isPresent()) {
+            return ResponseEntity.ok(createdUser.get());
+
+        }
+            return ResponseEntity.status(409)
+                    .body("The user already exists with username: " + user.getUsername());
+
     }
 
 
