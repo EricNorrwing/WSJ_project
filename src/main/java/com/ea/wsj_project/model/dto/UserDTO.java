@@ -1,23 +1,15 @@
-package com.ea.wsj_project.model;
+package com.ea.wsj_project.model.dto;
 
 import com.ea.wsj_project.response.Response;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-
-@Entity
-@Table(name="users")
 @Getter
 @Setter
-public class User implements Response {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class UserDTO implements Response {
 
     @NotBlank(message = "Username cannot be blank")
     @Email(message = "Username must be of type email")
@@ -27,11 +19,10 @@ public class User implements Response {
     @Size(min = 3, message = "Password must be at least 3 characters long")
     private String password;
 
-
-    public User() {
+    public UserDTO() {
     }
 
-    public User(String username, String password) {
+    public UserDTO(String username, String password) {
         this.username = username;
         this.password = password;
     }

@@ -25,6 +25,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
     //Lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
@@ -33,6 +34,9 @@ dependencies {
     //SL4J
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
     implementation 'ch.qos.logback:logback-classic:1.5.8'
+
+    //Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 
 }
