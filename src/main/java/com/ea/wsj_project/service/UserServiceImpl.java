@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Slf4j
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> updateUser(User user) {
-        if (user == null || user.getId() == null) {
+        if (user == null || user.getUserId() == null) {
             return Optional.empty();
         }
 

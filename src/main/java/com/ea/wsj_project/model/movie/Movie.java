@@ -1,5 +1,6 @@
 package com.ea.wsj_project.model.movie;
 
+import com.ea.wsj_project.response.Response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -8,7 +9,7 @@ import lombok.*;
 
 @Getter
 @Setter
-public class Movie {
+public class Movie implements Response {
 
     @JsonProperty("title")
     private String title;

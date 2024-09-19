@@ -1,5 +1,6 @@
 package com.ea.wsj_project.model;
 
+import com.ea.wsj_project.model.movie.MovieEntity;
 import com.ea.wsj_project.response.Response;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -7,6 +8,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 
 @Entity
@@ -17,7 +20,7 @@ public class User implements Response {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long userId;
 
     @NotBlank(message = "Username cannot be blank")
     @Email(message = "Username must be of type email")
@@ -35,5 +38,8 @@ public class User implements Response {
         this.username = username;
         this.password = password;
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<MovieEntity> watchlist;
 
 }
