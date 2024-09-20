@@ -1,12 +1,14 @@
 package com.ea.wsj_project.service;
 
 import com.ea.wsj_project.model.User;
+import com.ea.wsj_project.model.movie.MovieEntity;
 import com.ea.wsj_project.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -90,5 +92,11 @@ public class UserServiceImpl implements UserService {
             logger.error("An error occurred while deleting the user with ID {}: {}", id, e.getMessage(), e);
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Optional<List<MovieEntity>> getWatchlist(Long id) {
+        return userRepository.findById(id)
+                .map(User::getWatchlist);
     }
 }

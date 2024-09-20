@@ -1,6 +1,7 @@
 package com.ea.wsj_project.model.movie;
 
 import com.ea.wsj_project.model.User;
+import com.ea.wsj_project.response.Response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MovieEntity {
+public class MovieEntity implements Response {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,6 +24,8 @@ public class MovieEntity {
     //private Long userId;
 
     private String title;
+
+    private boolean watched;
 
     private boolean adult;
 

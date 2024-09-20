@@ -1,6 +1,5 @@
 package com.ea.wsj_project.controller.external;
 
-import com.ea.wsj_project.model.User;
 import com.ea.wsj_project.model.movie.Movie;
 import com.ea.wsj_project.model.movie.MovieEntity;
 import com.ea.wsj_project.model.movie.MovieList;
@@ -14,10 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/search")
+@RequestMapping("/api")
 public class MovieSearch {
 
     @Value("${tmdb_api_key}")
@@ -39,7 +39,7 @@ public class MovieSearch {
         this.userService = userService;
     }
 
-    @GetMapping("/{query}")
+    @GetMapping("/search/{query}")
     public Mono<MovieList> search(
             @PathVariable String query,
             @RequestParam(required = false) String releaseYear) {
@@ -54,10 +54,7 @@ public class MovieSearch {
                 .retrieve()
                 .bodyToMono(MovieList.class)
                 .doOnNext(fetchedMovies -> this.movieList = fetchedMovies);
-
     }
-
-
 
     @GetMapping("/save/{listNumber}")
     public ResponseEntity<Response> getNumber(@PathVariable int listNumber) {
@@ -66,68 +63,71 @@ public class MovieSearch {
         }
         Movie movie = movieList.getResults().get(listNumber);
 
-        MovieEntity movieEntity = convertToMovieEntity(movie);
+        MovieEntity movieEntity = movieService.convertToMovieEntity(movie);
 
         MovieEntity savedMovie = movieService.saveMovie(movieEntity);
 
         return ResponseEntity.ok(movie);
     }
 
-    private MovieEntity convertToMovieEntity(Movie movie) {
-        MovieEntity movieEntity = new MovieEntity();
-
-        movieEntity.setTitle(movie.getTitle());
-        movieEntity.setAdult(movie.isAdult());
-        movieEntity.setBackdropPath(movie.getBackdropPath());
-        movieEntity.setBudget(movie.getBudget());
-        movieEntity.setImdbId(movie.getImdbId());
-        movieEntity.setOriginalLanguage(movie.getOriginalLanguage());
-        movieEntity.setOriginalTitle(movie.getOriginalTitle());
-        movieEntity.setPopularity(movie.getPopularity());
-        movieEntity.setPosterPath(movie.getPosterPath());
-        movieEntity.setReleaseDate(movie.getReleaseDate());
-        movieEntity.setRevenue(movie.getRevenue());
-        movieEntity.setRuntime(movie.getRuntime());
-        movieEntity.setStatus(movie.getStatus());
-        movieEntity.setTagline(movie.getTagline());
-        movieEntity.setVoteAverage(movie.getVoteAverage());
-        movieEntity.setVoteCount(movie.getVoteCount());
-        return movieEntity;
-    }
-
+    // POST-MAPPING
     @GetMapping("/save/{listNumber}/user/{userId}")
-    public ResponseEntity<MovieEntity> saveMovieForUser(
+    public ResponseEntity<?> saveMovieForUser(
             @PathVariable int listNumber,
             @PathVariable Long userId) {
+
+        if (movieList == null || movieList.getResults().isEmpty()) {
+            return ResponseEntity.status(400).body(new ErrorResponse("Movie list is empty or not initialized"));
+        }
+
         if (listNumber < 0 || listNumber >= movieList.getResults().size()) {
-            return ResponseEntity.status(204).build();  // You can remove the ErrorResponse since we're returning MovieEntity now
+            return ResponseEntity.status(400).body(new ErrorResponse("Invalid movie index"));
         }
 
-        System.out.println("hej");
+        Optional<MovieEntity> savedMovie = movieService.saveMovieForUser(listNumber, userId, movieList);
 
-        // Get the selected movie from the list
-        Movie movie = movieList.getResults().get(listNumber);
-
-        // Convert Movie to MovieEntity
-        MovieEntity movieEntity = convertToMovieEntity(movie);
-
-        // Find the user by userId
-        Optional<User> userOptional = userService.getUserById(userId);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(404).build();  // If user not found, return 404
+        if (savedMovie.isEmpty()) {
+            return ResponseEntity.status(404).body(new ErrorResponse("User or Movie not found"));
         }
 
-        User user = userOptional.get();
-
-        // Associate the movie with the user
-        movieEntity.setUser(user);
-
-        // Save the movieEntity to the database
-        MovieEntity savedMovie = movieService.saveMovie(movieEntity);
-
-        // Return the saved movie
-        return ResponseEntity.ok(savedMovie);
+        return ResponseEntity.ok(savedMovie.get());
     }
 
+    @GetMapping("/{userId}/watchlist/")
+    public ResponseEntity<?> getWatchlist(@PathVariable Long userId) {
+        Optional<List<MovieEntity>> movieList = userService.getWatchlist(userId);
+
+        if (movieList.isPresent()) {
+            return ResponseEntity.ok(movieList.get());
+        } else {
+            return ResponseEntity.status(404).body(new ErrorResponse("Could not find user by this ID"));
+        }
+    }
+
+    @PutMapping("/{userId}/watchlist/{movieId}")
+    public ResponseEntity<?> updateWatchedStatus(
+            @PathVariable Long userId,
+            @PathVariable Long movieId,
+            @RequestParam boolean watched) {
+
+        Optional<MovieEntity> updatedMovie = movieService.updateWatchedStatus(userId, movieId, watched);
+
+        if (updatedMovie.isPresent()) {
+            return ResponseEntity.ok(updatedMovie.get());
+        } else {
+            return ResponseEntity.status(404).body(new ErrorResponse("Could not find user or movie by the provided ID"));
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
+        Optional<MovieEntity> deletedMovie = movieService.deleteMovie(id);
+
+        if (deletedMovie.isPresent()) {
+            return ResponseEntity.ok(deletedMovie.get());
+        } else {
+            return ResponseEntity.status(404).body(new ErrorResponse("Could not find movie by this ID"));
+        }
+    }
 
 }
