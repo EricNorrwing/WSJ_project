@@ -38,3 +38,4 @@ out/
 
 ### Security ###
 .env
+src/main/resources/mykeystore.p12
