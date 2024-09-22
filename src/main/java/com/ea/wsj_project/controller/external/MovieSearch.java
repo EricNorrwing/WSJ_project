@@ -8,6 +8,7 @@ import com.ea.wsj_project.response.Response;
 import com.ea.wsj_project.service.MovieService;
 import com.ea.wsj_project.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class MovieSearch {
 
     @Value("${tmdb_api_key}")
@@ -70,7 +72,7 @@ public class MovieSearch {
         return ResponseEntity.ok(movie);
     }
 
-    // POST-MAPPING
+    // POST-MAPPING - save movie for user
     @GetMapping("/save/{listNumber}/user/{userId}")
     public ResponseEntity<?> saveMovieForUser(
             @PathVariable int listNumber,
@@ -129,5 +131,43 @@ public class MovieSearch {
             return ResponseEntity.status(404).body(new ErrorResponse("Could not find movie by this ID"));
         }
     }
+
+    @GetMapping("/v1/movies")
+    public ResponseEntity<List<Movie>> getAllMovies() {
+        List<Movie> movies = movieService.getAllMovies();
+
+        if (movies.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(movies, HttpStatus.OK);
+    }
+
+    @PutMapping("/movies/{movieId}/backdrop")
+    public ResponseEntity<?> updateBackdropPath(
+            @PathVariable Long movieId,
+            @RequestParam String newBackdropPath) {
+        Optional<MovieEntity> updatedMovie = movieService.updateBackdropPath(movieId, newBackdropPath);
+
+        if (updatedMovie.isPresent()) {
+            return ResponseEntity.ok(updatedMovie.get());
+        } else {
+            return ResponseEntity.status(404).body(new ErrorResponse("Movie not found with id: " + movieId));
+        }
+    }
+
+    @GetMapping("/v1/movies/{movieId}")
+    public ResponseEntity<?> getMovieById(@PathVariable Long movieId) {
+        Optional<MovieEntity> movieEntity = movieService.getMovieById(movieId);
+
+        if (movieEntity.isPresent()) {
+            Movie movie = movieService.convertToMovie(movieEntity.get());
+            return ResponseEntity.ok(movie);
+        } else {
+            return ResponseEntity.status(404).body(new ErrorResponse("Movie not found with id: " + movieId));
+        }
+    }
+
+
+
 
 }

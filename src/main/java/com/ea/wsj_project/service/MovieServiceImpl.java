@@ -91,6 +91,7 @@ public class MovieServiceImpl implements MovieService {
         movieEntity.setBackdropPath(movie.getBackdropPath());
         movieEntity.setBudget(movie.getBudget());
         movieEntity.setImdbId(movie.getImdbId());
+        movieEntity.setOverview(movie.getOverview());
         movieEntity.setOriginalLanguage(movie.getOriginalLanguage());
         movieEntity.setOriginalTitle(movie.getOriginalTitle());
         movieEntity.setPopularity(movie.getPopularity());
@@ -104,6 +105,33 @@ public class MovieServiceImpl implements MovieService {
         movieEntity.setVoteCount(movie.getVoteCount());
         return movieEntity;
     }
+
+    // Converts MovieEntity to MovieObject
+    @Override
+    public Movie convertToMovie(MovieEntity movieEntity) {
+        Movie movie = new Movie();
+        String baseImageUrl = "https://image.tmdb.org/t/p/original";
+
+        movie.setTitle(movieEntity.getTitle());
+        movie.setAdult(movieEntity.isAdult());
+        movie.setBackdropPath(baseImageUrl + movieEntity.getBackdropPath());
+        movie.setBudget(movieEntity.getBudget());
+        movie.setImdbId(movieEntity.getImdbId());
+        movie.setOverview(movieEntity.getOverview());
+        movie.setOriginalLanguage(movieEntity.getOriginalLanguage());
+        movie.setOriginalTitle(movieEntity.getOriginalTitle());
+        movie.setPopularity(movieEntity.getPopularity());
+        movie.setPosterPath(baseImageUrl + movieEntity.getPosterPath());
+        movie.setReleaseDate(movieEntity.getReleaseDate());
+        movie.setRevenue(movieEntity.getRevenue());
+        movie.setRuntime(movieEntity.getRuntime());
+        movie.setStatus(movieEntity.getStatus());
+        movie.setTagline(movieEntity.getTagline());
+        movie.setVoteAverage(movieEntity.getVoteAverage());
+        movie.setVoteCount(movieEntity.getVoteCount());
+        return movie;
+    }
+
 
     public Optional<MovieEntity> updateWatchedStatus(Long userId, Long movieId, boolean watched) {
         Optional<User> userOptional = userRepository.findById(userId);
@@ -124,4 +152,37 @@ public class MovieServiceImpl implements MovieService {
         }
         return Optional.empty();
     }
+
+    @Override
+    public List<Movie> getAllMovies() {
+        List<MovieEntity> movieEntities = movieRepository.findAll();
+
+        if (movieEntities == null || movieEntities.isEmpty()) {
+            return List.of();
+        }
+
+        return movieEntities.stream()
+                .map(this::convertToMovie)
+                .toList();
+    }
+
+    @Override
+    public Optional<MovieEntity> updateBackdropPath(Long movieId, String newBackdropPath) {
+        Optional<MovieEntity> movieOptional = movieRepository.findById(movieId);
+
+        if (movieOptional.isPresent()) {
+            MovieEntity movie = movieOptional.get();
+            movie.setBackdropPath(newBackdropPath);
+            movieRepository.save(movie);
+            return Optional.of(movie);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<MovieEntity> getMovieById(Long movieId) {
+        return movieRepository.findById(movieId);
+    }
+
 }

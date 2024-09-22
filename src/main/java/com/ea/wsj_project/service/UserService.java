@@ -17,5 +17,4 @@ public interface UserService {
     public Optional<User> deleteUser(Long id);
     public Optional<List<MovieEntity>> getWatchlist(Long id);
 
-
 }

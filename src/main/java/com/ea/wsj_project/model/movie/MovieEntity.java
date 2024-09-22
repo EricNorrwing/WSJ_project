@@ -25,6 +25,9 @@ public class MovieEntity implements Response {
 
     private String title;
 
+    @Column(length = 5000)
+    private String overview;
+
     private boolean watched;
 
     private boolean adult;
